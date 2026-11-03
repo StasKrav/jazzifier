@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Джазификатор</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+
+  <body>
+    <div class="shell">
+      <div class="topline">
+        <div class="brand"><span class="brand-mark">♬</span><span>HARMONY LAB / 001</span></div>
+        <div class="live">Jazz harmony engine</div>
+      </div>
+      <header class="hero">
+        <div>
+          <div class="eyebrow">Reharmonization workspace</div>
+          <h1>ДЖАЗИФИКАЦИЯ<br /><span>ЗВУКА.</span></h1>
+        </div>
+        <div class="hero-note">
+          <strong>♭ 7 / ♯ 11</strong><small>Think beyond the triad</small>
+        </div>
+      </header>
+
+      <main class="studio">
+        <div class="studio-head">
+          <span class="studio-label">01 — Входная последовательность</span
+          ><span class="window-dots"><i></i><i></i><i></i></span>
+        </div>
+        <div class="workspace">
+          <label class="field-label" for="input">Аккорды · через пробел</label>
+          <input
+            type="text"
+            id="input"
+            value="C C7 F C C7 F C C7 G C C7 G C"
+            placeholder="Например: Cmaj7 A7 Dm7 G7"
+          />
+          <div class="toolbar">
+            <label>
+              Тональность
+              <select id="key"></select>
+            </label>
+            <button id="run-btn" class="primary" type="button">Анализировать →</button>
+            <button id="apply-rec-btn" type="button">✦ Применить рекомендации</button>
+            <button id="undo-btn" type="button" disabled>↶ Undo</button>
+            <button id="redo-btn" type="button" disabled>↷ Redo</button>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background: #8baeff"></i>Тоника</span>
+          <span><i class="dot" style="background: #8bd5a7"></i>Субдоминанта</span>
+          <span><i class="dot" style="background: #f08080"></i>Доминанта</span>
+          <span><i class="dot" style="background: #efa56e"></i>Вторичная доминанта</span>
+        </div>
+      </main>
+
+      <div id="analysis"></div>
+      <div id="result" class="result-box" style="display: none">
+        <h2>02 — Новая гармоническая линия</h2>
+        <div class="result-seq" id="resultSeq"></div>
+        <div class="note" id="resultNote"></div>
+      </div>
+      <div class="footer">
+        <span>Harmony Lab · Jazzifier</span><span>Listen closer. Go further.</span>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
