@@ -75,9 +75,15 @@ function dispatch(action) {
       next = seq.moveNode(s, action.from, action.to)
       break
 
-    case 'applyRec':
-      next = seq.applyRecommendation(s, action.index, action.rec)
-      break
+    case 'applyRec': {
+  const beforeIds = new Set(s.nodes.map(n => n.id))
+  next = seq.applyRecommendation(s, action.index, action.rec)
+  if (next !== s) {
+    const inserted = next.nodes.find(n => !beforeIds.has(n.id))
+    if (inserted) next = { ...next, selectedId: inserted.id }
+  }
+  break
+}
 
     case 'applyRecommended':
       next = seq.applyRecommended(s)

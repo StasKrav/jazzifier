@@ -1,5 +1,8 @@
 import { NOTES, SEMI } from './notes.js'
 import { degreeInScale, ROMAN } from './scales.js'
+import { approachesFor } from './approaches.js'
+
+
 
 // ================= БАЗОВЫЕ ФУНКЦИИ =================
 
@@ -133,8 +136,8 @@ export function seventhByFunction(chord, deg, mode) {
 export function recommendationsFor(chord, next, info, keyRoot, mode) {
   const recs = []
   const push = (rec) => {
-    if (rec && rec.payload && rec.payload.chord) recs.push(rec)
-  }
+  if (rec && rec.payload && (rec.payload.chord || rec.payload.chords)) recs.push(rec)
+}
 
   // Септаккорд по функции
   if ((chord.type === 'maj' || chord.type === 'm') && info.deg && !info.isDominant) {
@@ -251,6 +254,20 @@ export function recommendationsFor(chord, next, info, keyRoot, mode) {
       reason: 'Параллельная тоника сохраняет устойчивость, меняя эмоциональный оттенок.',
     })
   }
+
+  // Подходы к текущему аккорду (ii–V, minor ii–V и т.п.)
+if (!info.isDominant) {
+  const context = {
+    key: keyRoot,
+    mode,
+    next,
+    // prev/index/total появятся позже, когда расширим сигнатуру
+  }
+  const approaches = approachesFor(chord, context)
+  for (const a of approaches) {
+    push(a)
+  }
+}
 
   return recs
 }

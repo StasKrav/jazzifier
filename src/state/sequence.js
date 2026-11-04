@@ -35,11 +35,25 @@ export function replaceNode(state, index, chordStr) {
 
 export function applyRecommendation(state, index, rec) {
   switch (rec.kind) {
-    case 'replace':      return replaceNode(state, index, rec.payload.chord)
-    case 'insertBefore': return addNode(state, index, rec.payload.chord)
-    case 'insertAfter':  return addNode(state, index + 1, rec.payload.chord)
-    default: return state
+    case 'replace':
+      return replaceNode(state, index, rec.payload.chord)
+    case 'insertBefore':
+      if (rec.payload.chords) return insertMany(state, index, rec.payload.chords)
+      return addNode(state, index, rec.payload.chord)
+    case 'insertAfter':
+      if (rec.payload.chords) return insertMany(state, index + 1, rec.payload.chords)
+      return addNode(state, index + 1, rec.payload.chord)
+    default:
+      return state
   }
+}
+
+function insertMany(state, index, chordNames) {
+  let s = state
+  chordNames.forEach((name, offset) => {
+    s = addNode(s, index + offset, name)
+  })
+  return s
 }
 
 export function resetToOriginal(state) {

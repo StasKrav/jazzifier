@@ -67,14 +67,17 @@ describe('recommendationsFor', () => {
     expect(recs.some(r => r.tag === 'dim')).toBe(true)
   })
 
-  it('каждая рекомендация имеет kind и payload.chord', () => {
-    const c = parseChord('C')
-    const info = analyzeChord(c, null, 'C', 'major')
-    const recs = recommendationsFor(c, null, info, 'C', 'major')
-    for (const r of recs) {
-      expect(r).toHaveProperty('kind')
-      expect(r.payload).toHaveProperty('chord')
-      expect(['replace', 'insertBefore', 'insertAfter']).toContain(r.kind)
-    }
-  })
+  it('каждая рекомендация имеет kind и payload с chord или chords', () => {
+  const c = parseChord('C')
+  const info = analyzeChord(c, null, 'C', 'major')
+  const recs = recommendationsFor(c, null, info, 'C', 'major')
+  for (const r of recs) {
+    expect(r).toHaveProperty('kind')
+    expect(r.payload).toBeDefined()
+    const hasOne = typeof r.payload.chord === 'string'
+    const hasMany = Array.isArray(r.payload.chords) && r.payload.chords.length > 0
+    expect(hasOne || hasMany).toBe(true)
+    expect(['replace', 'insertBefore', 'insertAfter']).toContain(r.kind)
+  }
+})
 })
