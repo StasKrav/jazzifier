@@ -23,6 +23,13 @@ describe('parseChord', () => {
     expect(parseChord('Bo7')).toMatchObject({ root: 'B', type: 'dim7' })
   })
 
+  it('распознаёт секстаккорды', () => {
+    expect(parseChord('C6')).toMatchObject({ root: 'C', type: '6' })
+    expect(parseChord('Am6')).toMatchObject({ root: 'A', type: 'm6' })
+    expect(parseChord('C6/9')).toMatchObject({ root: 'C', type: '6/9' })
+    expect(parseChord('Am6/9')).toMatchObject({ root: 'A', type: 'm6/9' })
+  })
+
   it('распознаёт доминантсептаккорд и альтерации', () => {
     const g = parseChord('G7')
     expect(g).toMatchObject({ root: 'G', type: '7' })

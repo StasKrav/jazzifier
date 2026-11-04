@@ -50,6 +50,12 @@ it('в гармоническом миноре V7 — мажорная доми�
   expect(info.target).toBe('C')
 })
 
+it('C6 в C-мажоре — не заимствование', () => {
+  const c = parseChord('C6')
+  const info = analyzeChord(c, null, 'C', 'major')
+  expect(info.borrowed).toBeFalsy()
+})
+
 describe('recommendationsFor', () => {
   it('для трезвучия тоники предлагает септаккорд и параллель', () => {
     const c = parseChord('C')
@@ -68,16 +74,16 @@ describe('recommendationsFor', () => {
   })
 
   it('каждая рекомендация имеет kind и payload с chord или chords', () => {
-  const c = parseChord('C')
-  const info = analyzeChord(c, null, 'C', 'major')
-  const recs = recommendationsFor(c, null, info, 'C', 'major')
-  for (const r of recs) {
-    expect(r).toHaveProperty('kind')
-    expect(r.payload).toBeDefined()
-    const hasOne = typeof r.payload.chord === 'string'
-    const hasMany = Array.isArray(r.payload.chords) && r.payload.chords.length > 0
-    expect(hasOne || hasMany).toBe(true)
-    expect(['replace', 'insertBefore', 'insertAfter']).toContain(r.kind)
-  }
-})
+    const c = parseChord('C')
+    const info = analyzeChord(c, null, 'C', 'major')
+    const recs = recommendationsFor(c, null, info, 'C', 'major')
+    for (const r of recs) {
+      expect(r).toHaveProperty('kind')
+      expect(r.payload).toBeDefined()
+      const hasOne = typeof r.payload.chord === 'string'
+      const hasMany = Array.isArray(r.payload.chords) && r.payload.chords.length > 0
+      expect(hasOne || hasMany).toBe(true)
+      expect(['replace', 'insertBefore', 'insertAfter']).toContain(r.kind)
+    }
+  })
 })
