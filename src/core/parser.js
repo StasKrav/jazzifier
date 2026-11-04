@@ -24,36 +24,44 @@ export function parseChord(input) {
   const altered = []
 
   if (/^(mmaj7|mmaj9|mmaj)$/.test(q)) {
-    type = 'mMaj7'
-  } else if (/^m7b5$/.test(q)) {
-    type = 'm7b5'
-  } else if (/^(dim7|o7)$/.test(q)) {
-    type = 'dim7'
-  } else if (/^(dim|o)$/.test(q)) {
-    type = 'dim'
-  } else if (/^(aug|\+)$/.test(q)) {
-    type = 'aug'
-  } else if (/^7sus4?$|^7sus$/.test(q)) {
-    type = 'sus7'
-    altered.push('sus4')
-  } else if (/^sus4?$|^sus$/.test(q)) {
-    type = 'sus'
-  } else if (/^maj(7|9|11|13)?$/.test(q)) {
-    type = q === 'maj' ? 'maj' : 'maj7'
-    extension = (q.match(/(13|11|9|7)/) || [])[1] || null
-  } else if (/^m(7|9|11|13)?$/.test(q)) {
-    type = q === 'm' ? 'm' : 'm7'
-    extension = (q.match(/(13|11|9|7)/) || [])[1] || null
-  } else if (/^(7|9|11|13|7alt)/.test(q)) {
-    type = '7'
-    extension = (q.match(/(13|11|9)/) || [])[1] || '7'
-    if (/#5|b13/.test(q)) altered.push('#5/b13')
-    if (/#9/.test(q)) altered.push('#9')
-    if (/b9/.test(q)) altered.push('b9')
-    if (/#11/.test(q)) altered.push('#11')
-  } else if (q !== '') {
-    return null
-  }
+  type = 'mMaj7'
+} else if (/^m7b5$/.test(q)) {
+  type = 'm7b5'
+} else if (/^(dim7|o7)$/.test(q)) {
+  type = 'dim7'
+} else if (/^(dim|o)$/.test(q)) {
+  type = 'dim'
+} else if (/^(aug|\+)$/.test(q)) {
+  type = 'aug'
+} else if (/^7sus4?$|^7sus$/.test(q)) {
+  type = 'sus7'
+  altered.push('sus4')
+} else if (/^sus4?$|^sus$/.test(q)) {
+  type = 'sus'
+} else if (/^m6\/9$/.test(q)) {
+  type = 'm6/9'
+} else if (/^m6$/.test(q)) {
+  type = 'm6'
+} else if (/^6\/9$/.test(q)) {
+  type = '6/9'
+} else if (/^6$/.test(q)) {
+  type = '6'
+} else if (/^maj(7|9|11|13)?$/.test(q)) {
+  type = q === 'maj' ? 'maj' : 'maj7'
+  extension = (q.match(/(13|11|9|7)/) || [])[1] || null
+} else if (/^m(7|9|11|13)?$/.test(q)) {
+  type = q === 'm' ? 'm' : 'm7'
+  extension = (q.match(/(13|11|9|7)/) || [])[1] || null
+} else if (/^(7|9|11|13|7alt)/.test(q)) {
+  type = '7'
+  extension = (q.match(/(13|11|9)/) || [])[1] || '7'
+  if (/#5|b13/.test(q)) altered.push('#5/b13')
+  if (/#9/.test(q)) altered.push('#9')
+  if (/b9/.test(q)) altered.push('b9')
+  if (/#11/.test(q)) altered.push('#11')
+} else if (q !== '') {
+  return null
+}
 
   return {
     name: s,

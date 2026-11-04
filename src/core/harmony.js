@@ -2,8 +2,6 @@ import { NOTES, SEMI } from './notes.js'
 import { degreeInScale, ROMAN } from './scales.js'
 import { approachesFor } from './approaches.js'
 
-
-
 // ================= БАЗОВЫЕ ФУНКЦИИ =================
 
 export function transposeRoot(root, semitones) {
@@ -86,7 +84,11 @@ export function analyzeChord(chord, nextChord, keyRoot, mode) {
     chord.type !== expectedQuality &&
     !(chord.type === 'maj7' && expectedQuality === 'maj') &&
     !(chord.type === 'm7' && expectedQuality === 'm') &&
-    !(chord.type === '7' && deg === 5)
+    !(chord.type === '7' && deg === 5) &&
+    !(chord.type === '6' && expectedQuality === 'maj') &&
+    !(chord.type === '6/9' && expectedQuality === 'maj') &&
+    !(chord.type === 'm6' && expectedQuality === 'm') &&
+    !(chord.type === 'm6/9' && expectedQuality === 'm')
   ) {
     info.borrowed = true
   }
@@ -99,7 +101,10 @@ export function analyzeChord(chord, nextChord, keyRoot, mode) {
     else if (deg === 3) info.func = 'iii — медианта'
     else if (deg === 5) info.func = 'V — доминанта (трезвучие)'
     else if (deg === 7) info.func = 'vii° — вводный'
-    else { info.func = 'вне тональности'; info.warn = true }
+    else {
+      info.func = 'вне тональности'
+      info.warn = true
+    }
   } else {
     if (deg === 1) info.func = 'i — тоника'
     else if (deg === 4) info.func = 'iv — субдоминанта'
@@ -108,7 +113,10 @@ export function analyzeChord(chord, nextChord, keyRoot, mode) {
     else if (deg === 5) info.func = 'V — доминанта (трезвучие, гарм. минор)'
     else if (deg === 6) info.func = 'VI — медианта'
     else if (deg === 7) info.func = 'VII — вводный/медианта'
-    else { info.func = 'вне тональности'; info.warn = true }
+    else {
+      info.func = 'вне тональности'
+      info.warn = true
+    }
   }
 
   if (info.borrowed) info.func += ' · заимствованное качество'
@@ -135,9 +143,9 @@ export function seventhByFunction(chord, deg, mode) {
 
 export function recommendationsFor(chord, next, info, keyRoot, mode) {
   const recs = []
-  const push = (rec) => {
-  if (rec && rec.payload && (rec.payload.chord || rec.payload.chords)) recs.push(rec)
-}
+  const push = rec => {
+    if (rec && rec.payload && (rec.payload.chord || rec.payload.chords)) recs.push(rec)
+  }
 
   // Септаккорд по функции
   if ((chord.type === 'maj' || chord.type === 'm') && info.deg && !info.isDominant) {
@@ -215,7 +223,11 @@ export function recommendationsFor(chord, next, info, keyRoot, mode) {
   }
 
   // Подход к следующему аккорду
-  if (next && !info.isDominant && (info.deg === 2 || info.deg === 4 || info.deg === 6 || info.warn)) {
+  if (
+    next &&
+    !info.isDominant &&
+    (info.deg === 2 || info.deg === 4 || info.deg === 6 || info.warn)
+  ) {
     const approach = dominantFor(next.root)
     push({
       id: `approach:${approach}`,
@@ -227,47 +239,94 @@ export function recommendationsFor(chord, next, info, keyRoot, mode) {
     })
   }
 
-  // Modal interchange: IV → iv
-  if (mode === 'major' && info.deg === 4 && !info.isDominant) {
-    const iv = chord.root + 'm7'
+  // ================= ОТНОСИТЕЛЬНАЯ ТОНАЛЬНОСТЬ =================
+  // C мажор → Am7 (vi), Cm минор → Ebmaj7 (III).
+  // Это та же тональность, но с другим ладом; тоника меняется.
+  if (info.deg === 1 && !info.isDominant) {
+    const relativeRoot =
+      mode === 'major'
+        ? NOTES[(SEMI[chord.root] + 9) % 12] // +9 = vi
+        : NOTES[(SEMI[chord.root] + 3) % 12] // +3 = III
+    const relative = relativeRoot + (mode === 'major' ? 'm7' : 'maj7')
+
     push({
-      id: `parallel-iv:${iv}`,
-      label: `Из параллельного минора: ${iv}`,
-      tag: 'parallel',
+      id: `relative:${relative}`,
+      label: `Относительная тоника: ${relative}`,
+      tag: 'relative',
       kind: 'replace',
-      payload: { chord: iv },
-      reason: 'iv из параллельного минора добавляет мягкую минорную субдоминантовую окраску.',
+      payload: { chord: relative },
+      reason:
+        mode === 'major'
+          ? `${relativeRoot}m7 — относительный минор к ${chord.root}. Та же тональность, но центром становится vi.`
+          : `${relativeRoot}maj7 — относительный мажор к ${chord.root}m. Та же тональность, но центром становится III.`,
+      priority: 30,
     })
   }
 
-  // Параллель тоники
-  if (info.deg === 1 && !info.isDominant) {
-    const parallel = mode === 'major'
-      ? NOTES[(SEMI[chord.root] + 9) % 12] + 'm7'
-      : NOTES[(SEMI[chord.root] + 3) % 12] + 'maj7'
+  // ================= MODAL INTERCHANGE: IV → iv =================
+  // В мажоре: Fmaj7 (IV) → Fm7 (iv). Заимствование из параллельного минора
+  // (C-минора), а не «параллельная тональность к F».
+  if (mode === 'major' && info.deg === 4 && !info.isDominant) {
+    const iv = chord.root + 'm7'
+
     push({
-      id: `parallel:${parallel}`,
-      label: `Параллель: ${parallel}`,
-      tag: 'parallel',
+      id: `modal-iv:${iv}`,
+      label: `iv из одноимённого минора: ${iv}`,
+      tag: 'borrowed',
       kind: 'replace',
-      payload: { chord: parallel },
-      reason: 'Параллельная тоника сохраняет устойчивость, меняя эмоциональный оттенок.',
+      payload: { chord: iv },
+      reason: `iv (${iv}) вместо IV (${chord.name}) — минорная субдоминанта, заимствованная из ${keyRoot}-минора (одноимённого). Классический modal interchange.`,
+      priority: 40,
     })
+  }
+
+  // ================= ПАРАЛЛЕЛЬНАЯ ТОНАЛЬНОСТЬ =================
+  if (!info.isDominant) {
+    const isMajorChord =
+      chord.type === 'maj' || chord.type === 'maj7' || chord.type === '6' || chord.type === '6/9'
+    const isMinorChord =
+      chord.type === 'm' ||
+      chord.type === 'm7' ||
+      chord.type === 'mMaj7' ||
+      chord.type === 'm6' ||
+      chord.type === 'm6/9'
+
+    if (isMajorChord) {
+      const parallel = NOTES[(SEMI[chord.root] + 9) % 12] + 'm7'
+      push({
+        id: `parallel:${parallel}`,
+        label: `Параллельная тональность: ${parallel}`,
+        tag: 'parallel',
+        kind: 'replace',
+        payload: { chord: parallel },
+        reason: `${parallel} — параллельный минор к ${chord.name}.`,
+      })
+    } else if (isMinorChord) {
+      const parallel = NOTES[(SEMI[chord.root] + 3) % 12] + 'maj7'
+      push({
+        id: `parallel:${parallel}`,
+        label: `Параллельная тональность: ${parallel}`,
+        tag: 'parallel',
+        kind: 'replace',
+        payload: { chord: parallel },
+        reason: `${parallel} — параллельный мажор к ${chord.name}.`,
+      })
+    }
   }
 
   // Подходы к текущему аккорду (ii–V, minor ii–V и т.п.)
-if (!info.isDominant) {
-  const context = {
-    key: keyRoot,
-    mode,
-    next,
-    // prev/index/total появятся позже, когда расширим сигнатуру
+  if (!info.isDominant) {
+    const context = {
+      key: keyRoot,
+      mode,
+      next,
+      // prev/index/total появятся позже, когда расширим сигнатуру
+    }
+    const approaches = approachesFor(chord, context)
+    for (const a of approaches) {
+      push(a)
+    }
   }
-  const approaches = approachesFor(chord, context)
-  for (const a of approaches) {
-    push(a)
-  }
-}
 
   return recs
 }

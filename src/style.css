@@ -317,6 +317,14 @@ button.primary:hover {
   background: #315846;
   color: #d4ffe1;
 }
+.tag.borrowed {
+  background: #4a3a5b;
+  color: #e3d5f5;
+}
+.tag.relative {
+  background: #3a4a6b;
+  color: #d7e2ff;
+}
 .tag.dim {
   background: #344f78;
   color: #d7e8ff;
