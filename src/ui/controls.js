@@ -2,11 +2,25 @@ const ALL_KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B
 
 export function initControls(dispatch, store) {
   const input = document.getElementById('input')
+  if (input) {
+  input.addEventListener('focus', () => {
+    document.body.classList.add('workspace-mode')
+    const studio = document.querySelector('.studio')
+    if (!studio) return
+    const rect = studio.getBoundingClientRect()
+    // скроллим, только если studio ещё не наверху
+    if (rect.top < 0 || rect.top > 40) {
+      studio.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  })
+}
   const rootSel = document.getElementById('key-root')
   const modeBtns = document.querySelectorAll('.mode-toggle button')
   const runBtn = document.getElementById('run-btn')
   const undoBtn = document.getElementById('undo-btn')
   const redoBtn = document.getElementById('redo-btn')
+
+  
 
   // --- тоники ---
   if (rootSel && rootSel.options.length === 0) {

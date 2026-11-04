@@ -40,6 +40,7 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
 .brand {
   display: flex;
   align-items: center;
@@ -74,6 +75,28 @@ body {
   align-items: end;
   gap: 30px;
   margin-bottom: 34px;
+}
+.hero {
+  transition: opacity 0.25s ease, max-height 0.3s ease, margin 0.3s ease;
+  max-height: 300px;        /* заведомо больше реальной высоты */
+  overflow: hidden;
+}
+.topline {
+  transition: opacity 0.25s ease, max-height 0.3s ease, margin 0.3s ease;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+body.workspace-mode .hero {
+  opacity: 0;
+  max-height: 0;
+  margin-bottom: 0;
+  pointer-events: none;
+}
+body.workspace-mode .topline {
+  opacity: 0;
+  max-height: 0;
+  margin-bottom: 0;
 }
 .eyebrow {
   font:
@@ -486,9 +509,54 @@ button.primary:hover {
 }
 .tl-rec:hover { color: var(--gold); }
 
-@media (max-width: 720px) {
-  .tl-block { min-width: 60px; padding: 8px 10px; }
-  .tl-name { font-size: 13px; }
+.tl-track {
+  display: flex;
+  align-items: stretch;   /* выравниваем по высоте, чтобы поле не «проваливалось» */
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  min-width: min-content;
+}
+
+.tl-insert-slot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 0 2px;
+}
+
+.tl-insert-input {
+  width: 90px;
+  padding: 8px 10px;
+  background: #090e16;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  color: #f1f5fa;
+  font: 13px 'DM Mono', monospace;
+  outline: none;
+}
+.tl-insert-input.is-invalid {
+  border-color: var(--red);
+}
+.tl-insert-ok {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #17130b;
+  font-weight: 700;
+  padding: 8px 10px;
+  min-width: 34px;
+}
+.tl-insert-ok:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tl-insert-cancel {
+  background: #0d131c;
+  border-color: #303b49;
+  color: #c3cedb;
+  padding: 8px 10px;
+  min-width: 34px;
 }
 
 
@@ -499,6 +567,14 @@ button.primary:hover {
 
 
 
+
+
+
+
+@media (max-width: 720px) {
+  .tl-block { min-width: 60px; padding: 8px 10px; }
+  .tl-name { font-size: 13px; }
+}
 
 @media (max-width: 720px) {
   body {
