@@ -19,7 +19,7 @@
       <header class="hero">
         <div>
           <div class="eyebrow">Reharmonization workspace</div>
-          <h1>ДЖАЗИФИКАЦИЯ<br /><span>ЗВУКА.</span></h1>
+          <h1>ДЖАЗ<span>ИФИКАЦИЯ</span></h1>
         </div>
         <div class="hero-note">
           <strong>♭ 7 / ♯ 11</strong><small>Think beyond the triad</small>
@@ -40,15 +40,22 @@
             placeholder="Например: Cmaj7 A7 Dm7 G7"
           />
           <div class="toolbar">
-            <label>
+            <label class="key-field">
               Тональность
-              <select id="key"></select>
+              <div class="key-controls">
+                <select id="key-root"></select>
+                <div class="mode-toggle" role="group" aria-label="Лад">
+                  <button type="button" data-mode="major" class="active">Мажор</button>
+                  <button type="button" data-mode="minor">Минор</button>
+                </div>
+              </div>
             </label>
             <button id="run-btn" class="primary" type="button">Анализировать →</button>
             <button id="apply-rec-btn" type="button">✦ Применить рекомендации</button>
-            <button id="undo-btn" type="button" disabled>↶ Undo</button>
-            <button id="redo-btn" type="button" disabled>↷ Redo</button>
-          </div>
+            <div class="toolbar-right">
+    <button id="undo-btn" type="button" disabled>↶ Undo</button>
+    <button id="redo-btn" type="button" disabled>↷ Redo</button>
+  </div>
         </div>
         <div class="legend">
           <span><i class="dot" style="background: #8baeff"></i>Тоника</span>
@@ -58,7 +65,8 @@
         </div>
       </main>
 
-      <div id="analysis"></div>
+      <div id="timeline" class="timeline"></div>
+
       <div id="result" class="result-box" style="display: none">
         <h2>02 — Новая гармоническая линия</h2>
         <div class="result-seq" id="resultSeq"></div>

@@ -18,12 +18,12 @@ export function renderAnalysis(root, state, dispatch) {
   clear(root)
   const { key, mode, nodes } = state
   if (!nodes.length) {
-    root.appendChild(makeEl('div', {
-      class: 'error',
-      text: 'Не удалось распознать аккорды. Проверь обозначения и разделяй аккорды пробелами.',
-    }))
-    return
-  }
+  root.appendChild(makeEl('div', {
+    class: 'hint',
+    text: 'Введи последовательность аккордов и нажми «Анализировать» — например, Cmaj7 A7 Dm7 G7',
+  }))
+  return
+}
 
   const chords = nodes.map(n => n.chord)
 
